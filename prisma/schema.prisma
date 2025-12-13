@@ -14,10 +14,9 @@ model User {
   email    String @unique @db.VarChar(150)
   password String @db.VarChar(100)
 
-  role     String @default("TALENT") @db.VarChar(20)
-
-  todos Todo[]
-  posts Post[]
+  todos              Todo[]
+  posts              Post[]
+  eventRegistrations EventRegistration[]
 
   @@map("users")
 }
@@ -82,12 +81,40 @@ model CommentVote {
   @@map("comment_votes")
 }
 
+model Company {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(150)
+  description String?  @db.Text
+  email       String   @unique @db.VarChar(150)
+  created_at  DateTime @default(now())
+
+  events Event[]
+
+  @@map("companies")
+}
+
 model Event {
-  id         Int      @id @default(autoincrement())
-  title       String   @db.VarChar(100)
-  description String   @db.Text
-  event_date  DateTime
-  location    String   @db.VarChar(200)
+  id               Int      @id @default(autoincrement())
+  title            String   @db.VarChar(100)
+  description      String   @db.Text
+  event_date       DateTime
+  company_id       Int
+  registered_quota Int
+  created_at       DateTime @default(now())
+
+  company            Company             @relation(fields: [company_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  eventRegistrations EventRegistration[]
 
   @@map("events")
+}
+
+model EventRegistration {
+  user_id  Int
+  event_id Int
+
+  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  event Event @relation(fields: [event_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([user_id, event_id])
+  @@map("event_registrations")
 }
