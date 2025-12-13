@@ -5,6 +5,7 @@ import { CommentController } from '../controllers/comment-controller';
 import { VoteController } from '../controllers/vote-controller';
 import { EventController } from '../controllers/event-controller';
 import { CompanyController } from '../controllers/company-controller';
+import { BountyController } from '../controllers/bounty-controller';
 
 export const publicRouter = express.Router();
 
@@ -45,3 +46,19 @@ publicRouter.get("/companies/:companyId/events", EventController.getEventsByComp
 // Event registration routes
 publicRouter.post("/events/register", EventController.registerToEvent);
 publicRouter.delete("/events/:eventId/users/:userId", EventController.unregisterFromEvent);
+
+// Bounty routes - matching frontend endpoints
+publicRouter.get("/bounties/search", BountyController.searchBounties); // Must come before /:id
+publicRouter.get("/bounties", BountyController.getAllBounties);
+publicRouter.get("/bounties/:id", BountyController.getBountyById);
+publicRouter.post("/bounties", BountyController.createBounty);
+publicRouter.put("/bounties/:id", BountyController.updateBounty);
+publicRouter.delete("/bounties/:id", BountyController.deleteBounty);
+
+// Application routes
+publicRouter.post("/bounties/:id/apply", BountyController.applyToBounty);
+publicRouter.get("/applications", BountyController.getAllApplications);
+publicRouter.get("/applications/:id", BountyController.getApplicationById);
+publicRouter.put("/applications/:id", BountyController.updateApplication);
+publicRouter.delete("/applications/:id", BountyController.deleteApplication);
+
