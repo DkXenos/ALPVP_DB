@@ -7,3 +7,17 @@ export interface BountyResponse {
   rewardMoney: number;
   status: string;
 }
+
+export interface AssignedBountyResponse extends BountyResponse {
+  assignedAt: string;
+  isCompleted: boolean;
+  completedAt: string | null;
+}
+
+export interface ClaimBountyRequest {
+  bountyId: string;
+}
+
+export interface UnclaimBountyRequest {
+  bountyId: string;
+}

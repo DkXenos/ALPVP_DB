@@ -16,5 +16,8 @@ privateRouter.delete("/todo-list/:todoListId", TodoController.deleteTodo)
 // Bounty routes
 privateRouter.get("/bounties", BountyController.getAllBounties)
 privateRouter.get("/bounties/:id", BountyController.getBountyById)
+privateRouter.post("/bounties/:id/claim", BountyController.claimBounty)
+privateRouter.delete("/bounties/:id/unclaim", BountyController.unclaimBounty)
+privateRouter.get("/my-bounties", BountyController.getMyBounties)
 
 // Cobak push - Ayman tes kedua
