@@ -118,3 +118,16 @@ model EventRegistration {
   @@id([user_id, event_id])
   @@map("event_registrations")
 }
+
+model Bounty {
+  id          String   @id @default(uuid())
+  title       String   @db.VarChar(200)
+  company     String   @db.VarChar(150)
+  deadline    DateTime
+  rewardXp    Int      @map("reward_xp")
+  rewardMoney Int      @map("reward_money")
+  status      String   @db.VarChar(20)
+  created_at  DateTime @default(now())
+
+  @@map("bounties")
+}
