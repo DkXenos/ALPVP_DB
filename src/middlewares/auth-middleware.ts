@@ -34,13 +34,8 @@ export const authMiddleware = (
             return next(new ResponseError(401, "Invalid or expired token"))
         }
 
-        // Koneksikan payload ke request object
-        req.user = {
-            id: payload.id,
-            username: payload.username,
-            email: payload.email,
-            role: payload.role,
-        }
+        // Attach payload (user or company) to request object
+        req.user = payload as any
 
         return next()
     } catch (error) {
