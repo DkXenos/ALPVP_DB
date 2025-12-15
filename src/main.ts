@@ -7,8 +7,7 @@ import { errorMiddleware } from './middlewares/error-middleware';
 const app = express();
 
 app.use(express.json());
-// Serve static files from uploads directory
-// uploads removed: events no longer accept images
+
 app.use("/api", publicRouter)
 app.use("/api", privateRouter);
 app.use(errorMiddleware);
