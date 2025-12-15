@@ -12,56 +12,49 @@ import bcrypt from "bcrypt"
 
 export class UserService {
     static async register(request: RegisterUserRequest): Promise<UserResponse> {
-        const validatedData = Validation.validate(
-            UserValidation.REGISTER,
-            request
-        )
+        const validatedData = Validation.validate(UserValidation.REGISTER, request)
 
-        const email = await prismaClient.user.findFirst({
-            where: {
-                email: validatedData.email,
-            },
+        // Ngecek email udah ada apa belum
+        const existing = await prismaClient.user.findFirst({
+            where: { email: validatedData.email },
         })
-
-        if (email) {
+        if (existing) {
             throw new ResponseError(400, "Email has already existed!")
         }
 
-        validatedData.password = await bcrypt.hash(validatedData.password, 10)
+        // Password di hash
+        const hashed = await bcrypt.hash(validatedData.password, 10)
 
+        // Nge buat user dengan default role TALENT jika tidak di set
         const user = await prismaClient.user.create({
             data: {
                 username: validatedData.username,
                 email: validatedData.email,
-                password: validatedData.password,
+                password: hashed,
+                role: validatedData.role ?? "TALENT",
             },
         })
 
-        return toUserResponse(user.id, user.username, user.email)
+        // return full response with token + user info
+        return toUserResponse(user.id, user.username, user.email, user.role ?? "TALENT")
     }
 
     static async login(request: LoginUserRequest): Promise<UserResponse> {
         const validatedData = Validation.validate(UserValidation.LOGIN, request)
 
         const user = await prismaClient.user.findFirst({
-            where: {
-                email: validatedData.email,
-            },
+            where: { email: validatedData.email },
         })
 
         if (!user) {
             throw new ResponseError(400, "Invalid email or password!")
         }
 
-        const passwordIsValid = await bcrypt.compare(
-            validatedData.password,
-            user.password
-        )
-
+        const passwordIsValid = await bcrypt.compare(validatedData.password, user.password)
         if (!passwordIsValid) {
             throw new ResponseError(400, "Invalid email or password!")
         }
 
-        return toUserResponse(user.id, user.username, user.email)
+        return toUserResponse(user.id, user.username, user.email, (user as any).role ?? "TALENT")
     }
 }

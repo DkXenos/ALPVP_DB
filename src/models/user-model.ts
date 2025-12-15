@@ -1,16 +1,17 @@
-import { string } from "zod"
 import { generateToken } from "../utils/jwt-util"
 
 export interface UserJWTPayload {
     id: number
     username: string
     email: string
+    role?: string
 }
 
 export interface RegisterUserRequest {
     username: string
     email: string
     password: string
+    role?: "TALENT" | "COMPANY"
 }
 
 export interface LoginUserRequest {
@@ -19,22 +20,34 @@ export interface LoginUserRequest {
 }
 
 export interface UserResponse {
-    token?: string
+    id: number
+    username: string
+    email: string
+    role: string
+    token: string
 }
 
 export function toUserResponse(
     id: number,
     username: string,
-    email: string
+    email: string,
+    role: string = "TALENT"
 ): UserResponse {
+    const token = generateToken(
+        {
+            id,
+            username,
+            email,
+            role,
+        },
+        "7d" //Expired
+    )
+
     return {
-        token: generateToken(
-            {
-                id: id,
-                username: username,
-                email: email,
-            },
-            "1h"
-        ),
+        id,
+        username,
+        email,
+        role,
+        token,
     }
 }

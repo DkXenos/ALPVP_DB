@@ -10,23 +10,40 @@ export const authMiddleware = (
 ) => {
     try {
         const authHeader = req.headers["authorization"]
-        const token = authHeader && authHeader.split(" ")[1]
 
+        if (!authHeader) {
+            return next(new ResponseError(401, "Missing Authorization header"))
+        }
+
+        // Diekstrak Bearer token dari header
+        const parts = authHeader.split(" ")
+
+        if (parts.length !== 2 || parts[0] !== "Bearer") {
+            return next(new ResponseError(401, "Invalid Authorization header format"))
+        }
+
+        const token = parts[1]
 
         if (!token) {
-            next(new ResponseError(401, "Unauthorized user!"))
+            return next(new ResponseError(401, "Token not provided"))
         }
 
-        const payload = verifyToken(token!)
+        const payload = verifyToken(token)
 
-        if (payload) {
-            req.user = payload
-        } else {
-            next(new ResponseError(401, "Unauthorized user!"))
+        if (!payload) {
+            return next(new ResponseError(401, "Invalid or expired token"))
         }
 
-        next()
+        // Koneksikan payload ke request object
+        req.user = {
+            id: payload.id,
+            username: payload.username,
+            email: payload.email,
+            role: payload.role,
+        }
+
+        return next()
     } catch (error) {
-        next(error)
+        return next(new ResponseError(401, "Unauthorized user!"))
     }
 }
