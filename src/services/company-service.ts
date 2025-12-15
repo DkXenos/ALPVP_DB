@@ -1,42 +1,107 @@
 import {
-  CreateCompanyRequest,
   CompanyResponse,
   UpdateCompanyRequest,
+  RegisterCompanyRequest,
+  LoginCompanyRequest,
+  CompanyAuthResponse,
 } from "../models/company-model";
 import { prismaClient } from "../utils/database-util";
 import { CompanyValidation } from "../validations/company-validation";
 import { Validation } from "../validations/validation";
 import { ResponseError } from "../error/response-error";
+import bcrypt from "bcrypt";
+import { generateToken } from "../utils/jwt-util";
 
 export class CompanyService {
-  static async createCompany(request: CreateCompanyRequest): Promise<CompanyResponse> {
-    const createRequest = Validation.validate(CompanyValidation.CREATE_COMPANY, request);
+  static async register(request: RegisterCompanyRequest): Promise<CompanyAuthResponse> {
+    const registerRequest = Validation.validate(CompanyValidation.REGISTER_COMPANY, request);
 
     // Check if email already exists
     const existingCompany = await prismaClient.company.findUnique({
-      where: { email: createRequest.email },
+      where: { email: registerRequest.email },
     });
 
     if (existingCompany) {
       throw new ResponseError(400, "Company with this email already exists");
     }
 
+    // Hash password
+    const hashedPassword = await bcrypt.hash(registerRequest.password, 10);
+
+    // Create company
     const company = await prismaClient.company.create({
       data: {
-        name: createRequest.name,
-        description: createRequest.description || null,
-        email: createRequest.email,
+        name: registerRequest.name,
+        email: registerRequest.email,
+        password: hashedPassword,
+        description: registerRequest.description || null,
       },
     });
 
+    // Generate token
+    const token = generateToken(
+      {
+        id: company.id,
+        email: company.email,
+        name: company.name,
+        type: "company",
+      },
+      "24h"
+    );
+
     return {
-      id: company.id,
-      name: company.name,
-      description: company.description,
-      email: company.email,
-      created_at: company.created_at,
+      token,
+      company: {
+        id: company.id,
+        name: company.name,
+        email: company.email,
+      },
     };
   }
+
+  static async login(request: LoginCompanyRequest): Promise<CompanyAuthResponse> {
+    const loginRequest = Validation.validate(CompanyValidation.LOGIN_COMPANY, request);
+
+    // Find company by email
+    const company = await prismaClient.company.findUnique({
+      where: { email: loginRequest.email },
+    });
+
+    if (!company) {
+      throw new ResponseError(401, "Invalid email or password");
+    }
+
+    // Verify password
+    const isPasswordValid = await bcrypt.compare(loginRequest.password, company.password);
+
+    if (!isPasswordValid) {
+      throw new ResponseError(401, "Invalid email or password");
+    }
+
+    // Generate token
+    const token = generateToken(
+      {
+        id: company.id,
+        email: company.email,
+        name: company.name,
+        type: "company",
+      },
+      "24h"
+    );
+
+    return {
+      token,
+      company: {
+        id: company.id,
+        name: company.name,
+        email: company.email,
+      },
+    };
+  }
+
+  // Note: company creation for auth is handled by `register` which creates
+  // the company with a password and returns an auth token. The legacy
+  // `createCompany` method was removed to avoid duplicate flows.
 
   static async getAllCompanies(): Promise<CompanyResponse[]> {
     const companies = await prismaClient.company.findMany({

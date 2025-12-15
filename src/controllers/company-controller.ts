@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { CompanyService } from "../services/company-service";
 import {
-  CreateCompanyRequest,
   UpdateCompanyRequest,
+  RegisterCompanyRequest,
+  LoginCompanyRequest,
 } from "../models/company-model";
 
 export class CompanyController {
-  static async createCompany(req: Request, res: Response, next: NextFunction) {
+  static async register(req: Request, res: Response, next: NextFunction) {
     try {
-      const request: CreateCompanyRequest = req.body;
-      const response = await CompanyService.createCompany(request);
+      const request: RegisterCompanyRequest = req.body;
+      const response = await CompanyService.register(request);
       res.status(201).json({
         data: response,
       });
@@ -17,6 +18,19 @@ export class CompanyController {
       next(error);
     }
   }
+
+  static async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      const request: LoginCompanyRequest = req.body;
+      const response = await CompanyService.login(request);
+      res.status(200).json({
+        data: response,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+ 
 
   static async getAllCompanies(req: Request, res: Response, next: NextFunction) {
     try {

@@ -11,6 +11,10 @@ export const publicRouter = express.Router();
 publicRouter.post("/register", UserController.register);
 publicRouter.post("/login", UserController.login);
 
+// Company auth routes
+publicRouter.post("/companies/register", CompanyController.register);
+publicRouter.post("/companies/login", CompanyController.login);
+
 publicRouter.post("/posts", PostController.createPost);
 publicRouter.get("/posts", PostController.getAllPosts);
 publicRouter.get("/posts/:id", PostController.getPostById);
@@ -28,7 +32,7 @@ publicRouter.delete("/votes/:voteId", VoteController.removeVote);
 // Note: vote stats removed from backend; frontend should compute totals from returned vote lists
 
 // Company routes
-publicRouter.post("/companies", CompanyController.createCompany);
+// Note: company creation now handled via /companies/register (auth flow)
 publicRouter.get("/companies", CompanyController.getAllCompanies);
 publicRouter.get("/companies/:id", CompanyController.getCompanyById);
 publicRouter.put("/companies/:id", CompanyController.updateCompany);

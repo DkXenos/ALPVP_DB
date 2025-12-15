@@ -86,6 +86,7 @@ model Company {
   name        String   @db.VarChar(150)
   description String?  @db.Text
   email       String   @unique @db.VarChar(150)
+  password    String   @db.VarChar(100)
   created_at  DateTime @default(now())
 
   events Event[]
