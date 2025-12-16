@@ -19,5 +19,3 @@ privateRouter.get("/bounties/:id", BountyController.getBountyById)
 privateRouter.post("/bounties/:id/claim", BountyController.claimBounty)
 privateRouter.delete("/bounties/:id/unclaim", BountyController.unclaimBounty)
 privateRouter.get("/my-bounties", BountyController.getMyBounties)
-
-// Cobak push - Ayman tes kedua

@@ -13,7 +13,7 @@ model User {
   username String @db.VarChar(100)
   email    String @unique @db.VarChar(150)
   password String @db.VarChar(100)
-  role     String @default("TALENT") @db.VarChar(20)
+  
 
   todos              Todo[]
   posts              Post[]

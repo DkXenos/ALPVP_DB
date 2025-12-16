@@ -14,8 +14,6 @@ export class UserValidation {
         password: z
             .string()
             .min(8, "Password must contain more than or equal to 8 characters!"),
-
-        role: z.enum(["TALENT", "COMPANY"]).optional(),
     })
 
     static readonly LOGIN: ZodType = z.object({

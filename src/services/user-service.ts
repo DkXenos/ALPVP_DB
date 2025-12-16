@@ -25,18 +25,17 @@ export class UserService {
         // Password di hash
         const hashed = await bcrypt.hash(validatedData.password, 10)
 
-        // Nge buat user dengan default role TALENT jika tidak di set
+        // Create user with server-side default role (not accepted from client)
         const user = await prismaClient.user.create({
             data: {
                 username: validatedData.username,
                 email: validatedData.email,
                 password: hashed,
-                role: validatedData.role ?? "TALENT",
             },
         })
 
         // return full response with token + user info
-        return toUserResponse(user.id, user.username, user.email, user.role ?? "TALENT")
+        return toUserResponse(user.id, user.username, user.email)
     }
 
     static async login(request: LoginUserRequest): Promise<UserResponse> {
@@ -55,6 +54,6 @@ export class UserService {
             throw new ResponseError(400, "Invalid email or password!")
         }
 
-        return toUserResponse(user.id, user.username, user.email, (user as any).role ?? "TALENT")
+        return toUserResponse(user.id, user.username, user.email)
     }
 }
