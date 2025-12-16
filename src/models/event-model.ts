@@ -34,4 +34,14 @@ export interface EventResponse {
     username: string;
     email: string;
   }[];
+  isOwner?: boolean;
+}
+
+export interface EventRegistrant {
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    role: string;
+  };
 }

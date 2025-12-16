@@ -2,6 +2,7 @@ import express from "express"
 import { authMiddleware } from "../middlewares/auth-middleware"
 import { BountyController } from "../controllers/bounty-controller"
 import { ProfileController } from "../controllers/profile-controller"
+import { EventController } from "../controllers/event-controller"
 
 export const privateRouter = express.Router()
 
@@ -14,13 +15,24 @@ privateRouter.put("/profile", ProfileController.updateProfile)
 privateRouter.get("/profile/posts", ProfileController.getUserPosts)
 privateRouter.get("/profile/events", ProfileController.getUserEvents)
 
-// Bounty routea
+// Bounty routes (users)
 privateRouter.get("/bounties", BountyController.getAllBounties)
 privateRouter.get("/bounties/:id", BountyController.getBountyById)
 privateRouter.post("/bounties/:id/claim", BountyController.claimBounty)
 privateRouter.delete("/bounties/:id/unclaim", BountyController.unclaimBounty)
-<<<<<<< HEAD
 privateRouter.get("/my-bounties", BountyController.getMyBounties)
-=======
 privateRouter.get("/my-bounties", BountyController.getMyBounties)
->>>>>>> main
+privateRouter.post("/bounties/:id/submit", BountyController.submitBounty)
+privateRouter.get("/my-bounties", BountyController.getMyBounties)
+
+// Bounty routes (companies only)
+privateRouter.get("/bounties/:id/applicants", BountyController.getBountyApplicants)
+privateRouter.post("/bounties", BountyController.createBounty)
+privateRouter.post("/bounties/:id/select-winner/:userId", BountyController.selectWinner)
+
+// Event routes (companies only)
+privateRouter.get("/events/:id/registrants", EventController.getEventRegistrants)
+
+// Company routes
+privateRouter.get("/company/my-bounties", BountyController.getCompanyBounties)
+privateRouter.get("/company/my-events", EventController.getCompanyEvents)

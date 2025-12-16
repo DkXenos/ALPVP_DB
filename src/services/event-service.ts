@@ -336,4 +336,86 @@ export class EventService {
       registered_users: event.eventRegistrations.map((reg) => reg.user),
     }));
   }
+
+  // Get registrants for an event (company only)
+  static async getEventRegistrants(eventId: number, companyId: number) {
+    // Check if event exists and belongs to company
+    const event = await prismaClient.event.findUnique({
+      where: { id: eventId },
+    });
+
+    if (!event) {
+      throw new ResponseError(404, "Event not found");
+    }
+
+    if (event.company_id !== companyId) {
+      throw new ResponseError(403, "You don't have permission to view registrants for this event");
+    }
+
+    // Get all users registered for this event
+    const registrations = await prismaClient.eventRegistration.findMany({
+      where: { event_id: eventId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+    });
+
+    return registrations.map((registration) => ({
+      user: {
+        id: registration.user.id,
+        username: registration.user.username,
+        email: registration.user.email,
+        role: registration.user.role,
+      },
+    }));
+  }
+
+  // Get company's events
+  static async getCompanyEvents(companyId: number): Promise<EventResponse[]> {
+    const events = await prismaClient.event.findMany({
+      where: { company_id: companyId },
+      include: {
+        company: {
+          select: {
+            name: true,
+          },
+        },
+        eventRegistrations: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
+    return events.map((event) => ({
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      event_date: event.event_date,
+      company_id: event.company_id,
+      company_name: event.company.name,
+      registered_quota: event.registered_quota,
+      current_registrations: event.eventRegistrations.length,
+      created_at: event.created_at,
+      registered_users: event.eventRegistrations.map((reg) => reg.user),
+      isOwner: true,
+    }));
+  }
 }

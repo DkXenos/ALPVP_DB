@@ -20,6 +20,8 @@ export class ProfileController {
                     username: true,
                     email: true,
                     role: true,
+                    xp: true,
+                    balance: true,
                     posts: {
                         select: {
                             id: true,
@@ -88,6 +90,8 @@ export class ProfileController {
                     username: user.username,
                     email: user.email,
                     role: user.role,
+                    xp: user.xp,
+                    balance: user.balance,
                     posts: user.posts,
                     events: user.eventRegistrations.map((reg) => reg.event),
                     bounties: user.bountyAssignments.map((assignment) => ({
@@ -117,7 +121,7 @@ export class ProfileController {
                 totalEvents,
                 totalBounties,
                 completedBounties,
-                completedBountiesData,
+                user,
             ] = await Promise.all([
                 prismaClient.post.count({
                     where: { user_id: userId },
@@ -131,28 +135,18 @@ export class ProfileController {
                 prismaClient.bountyAssignment.count({
                     where: { user_id: userId, is_completed: true },
                 }),
-                prismaClient.bountyAssignment.findMany({
-                    where: { user_id: userId, is_completed: true },
+                prismaClient.user.findUnique({
+                    where: { id: userId },
                     select: {
-                        bounty: {
-                            select: {
-                                rewardXp: true,
-                                rewardMoney: true,
-                            },
-                        },
+                        xp: true,
+                        balance: true,
                     },
                 }),
             ])
 
-            const totalXpEarned = completedBountiesData.reduce(
-                (sum, assignment) => sum + assignment.bounty.rewardXp,
-                0
-            )
-
-            const totalMoneyEarned = completedBountiesData.reduce(
-                (sum, assignment) => sum + assignment.bounty.rewardMoney,
-                0
-            )
+            if (!user) {
+                throw new ResponseError(404, "User not found")
+            }
 
             res.status(200).json({
                 data: {
@@ -161,8 +155,8 @@ export class ProfileController {
                     totalBounties,
                     completedBounties,
                     activeBounties: totalBounties - completedBounties,
-                    totalXP: totalXpEarned,
-                    totalEarnings: totalMoneyEarned,
+                    totalXP: user.xp,
+                    totalEarnings: user.balance,
                 },
             })
         } catch (error) {
