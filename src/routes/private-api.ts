@@ -1,23 +1,22 @@
 import express from "express"
 import { authMiddleware } from "../middlewares/auth-middleware"
-import { TodoController } from "../controllers/todo-controller"
 import { BountyController } from "../controllers/bounty-controller"
+import { ProfileController } from "../controllers/profile-controller"
 
 export const privateRouter = express.Router()
 
 privateRouter.use(authMiddleware)
 
-privateRouter.get("/todo-list", TodoController.getAllTodos)
-privateRouter.get("/todo-list/:todoListId", TodoController.getTodo)
-privateRouter.post("/todo-list", TodoController.createTodo)
-privateRouter.put("/todo-list/:todoListId", TodoController.updateTodo)
-privateRouter.delete("/todo-list/:todoListId", TodoController.deleteTodo)
+// Profile routes
+privateRouter.get("/profile", ProfileController.getProfile)
+privateRouter.get("/profile/stats", ProfileController.getProfileStats)
+privateRouter.put("/profile", ProfileController.updateProfile)
+privateRouter.get("/profile/posts", ProfileController.getUserPosts)
+privateRouter.get("/profile/events", ProfileController.getUserEvents)
 
-// Bounty routes
+// Bounty routea
 privateRouter.get("/bounties", BountyController.getAllBounties)
 privateRouter.get("/bounties/:id", BountyController.getBountyById)
 privateRouter.post("/bounties/:id/claim", BountyController.claimBounty)
 privateRouter.delete("/bounties/:id/unclaim", BountyController.unclaimBounty)
 privateRouter.get("/my-bounties", BountyController.getMyBounties)
-
-// Cobak push - Ayman tes kedua
