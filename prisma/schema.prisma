@@ -15,27 +15,11 @@ model User {
   password String @db.VarChar(100)
   
 
-  todos              Todo[]
   posts              Post[]
   eventRegistrations EventRegistration[]
   bountyAssignments  BountyAssignment[]
 
   @@map("users")
-}
-
-model Todo {
-  id          Int    @id @default(autoincrement())
-  title       String @db.VarChar(100)
-  description String @db.Text
-  priority    String @db.VarChar(10)
-  due_date    String @db.VarChar(100)
-  status      String @db.VarChar(20)
-
-  user_id Int
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("todos")
 }
 
 model Post {
