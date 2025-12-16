@@ -3,8 +3,16 @@ import { prismaClient } from "../utils/database-util";
 import { ResponseError } from "../error/response-error";
 
 export class BountyService {
-  static async getAllBounties(): Promise<BountyResponse[]> {
+  static async getAllBounties(userId?: number, companyId?: number): Promise<BountyResponse[]> {
     const bounties = await prismaClient.bounty.findMany({
+      include: {
+        company: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
       orderBy: {
         deadline: "asc",
       },
@@ -13,17 +21,28 @@ export class BountyService {
     return bounties.map((bounty) => ({
       id: bounty.id,
       title: bounty.title,
-      company: bounty.company,
+      company: bounty.company.name,
+      companyId: bounty.company.id,
+      description: bounty.description || undefined,
       deadline: bounty.deadline.toISOString(),
       rewardXp: bounty.rewardXp,
       rewardMoney: bounty.rewardMoney,
       status: bounty.status,
+      isOwner: companyId ? bounty.company_id === companyId : false,
     }));
   }
 
-  static async getBountyById(id: string): Promise<BountyResponse> {
+  static async getBountyById(id: string, userId?: number, companyId?: number): Promise<BountyResponse> {
     const bounty = await prismaClient.bounty.findUnique({
       where: { id },
+      include: {
+        company: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
 
     if (!bounty) {
@@ -33,11 +52,14 @@ export class BountyService {
     return {
       id: bounty.id,
       title: bounty.title,
-      company: bounty.company,
+      company: bounty.company.name,
+      companyId: bounty.company.id,
+      description: bounty.description || undefined,
       deadline: bounty.deadline.toISOString(),
       rewardXp: bounty.rewardXp,
       rewardMoney: bounty.rewardMoney,
       status: bounty.status,
+      isOwner: companyId ? bounty.company_id === companyId : false,
     };
   }
 
@@ -104,7 +126,16 @@ export class BountyService {
     const assignments = await prismaClient.bountyAssignment.findMany({
       where: { user_id: userId },
       include: {
-        bounty: true,
+        bounty: {
+          include: {
+            company: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
         assigned_at: "desc",
@@ -114,7 +145,9 @@ export class BountyService {
     return assignments.map((assignment) => ({
       id: assignment.bounty.id,
       title: assignment.bounty.title,
-      company: assignment.bounty.company,
+      company: assignment.bounty.company.name,
+      companyId: assignment.bounty.company.id,
+      description: assignment.bounty.description || undefined,
       deadline: assignment.bounty.deadline.toISOString(),
       rewardXp: assignment.bounty.rewardXp,
       rewardMoney: assignment.bounty.rewardMoney,
@@ -124,4 +157,129 @@ export class BountyService {
       completedAt: assignment.completed_at ? assignment.completed_at.toISOString() : null,
     }));
   }
+
+  // Get applicants for a bounty (company only)
+  static async getBountyApplicants(bountyId: string, companyId: number) {
+    // Check if bounty exists and belongs to company
+    const bounty = await prismaClient.bounty.findUnique({
+      where: { id: bountyId },
+    });
+
+    if (!bounty) {
+      throw new ResponseError(404, "Bounty not found");
+    }
+
+    if (bounty.company_id !== companyId) {
+      throw new ResponseError(403, "You don't have permission to view applicants for this bounty");
+    }
+
+    // Get all users who claimed this bounty
+    const assignments = await prismaClient.bountyAssignment.findMany({
+      where: { bounty_id: bountyId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
+      orderBy: {
+        assigned_at: "desc",
+      },
+    });
+
+    return assignments.map((assignment) => ({
+      user: {
+        id: assignment.user.id,
+        username: assignment.user.username,
+        email: assignment.user.email,
+        role: assignment.user.role,
+      },
+      assignedAt: assignment.assigned_at.toISOString(),
+      isCompleted: assignment.is_completed,
+      completedAt: assignment.completed_at ? assignment.completed_at.toISOString() : null,
+    }));
+  }
+
+  // Get company's bounties
+  static async getCompanyBounties(companyId: number): Promise<BountyResponse[]> {
+    const bounties = await prismaClient.bounty.findMany({
+      where: { company_id: companyId },
+      include: {
+        company: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        bountyAssignments: true,
+      },
+      orderBy: {
+        created_at: "desc",
+      },
+    });
+
+    return bounties.map((bounty) => ({
+      id: bounty.id,
+      title: bounty.title,
+      company: bounty.company.name,
+      companyId: bounty.company.id,
+      description: bounty.description || undefined,
+      deadline: bounty.deadline.toISOString(),
+      rewardXp: bounty.rewardXp,
+      rewardMoney: bounty.rewardMoney,
+      status: bounty.status,
+      isOwner: true,
+      applicantsCount: bounty.bountyAssignments.length,
+    }));
+  }
+
+  // Create bounty (company only)
+  static async createBounty(
+    companyId: number,
+    data: {
+      title: string;
+      description?: string;
+      deadline: Date;
+      rewardXp: number;
+      rewardMoney: number;
+    }
+  ): Promise<BountyResponse> {
+    const bounty = await prismaClient.bounty.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        company_id: companyId,
+        deadline: data.deadline,
+        rewardXp: data.rewardXp,
+        rewardMoney: data.rewardMoney,
+        status: "OPEN",
+      },
+      include: {
+        company: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return {
+      id: bounty.id,
+      title: bounty.title,
+      company: bounty.company.name,
+      companyId: bounty.company.id,
+      description: bounty.description || undefined,
+      deadline: bounty.deadline.toISOString(),
+      rewardXp: bounty.rewardXp,
+      rewardMoney: bounty.rewardMoney,
+      status: bounty.status,
+      isOwner: true,
+    };
+  }
 }
+

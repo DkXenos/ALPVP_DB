@@ -2,9 +2,11 @@ import { generateToken } from "../utils/jwt-util"
 
 export interface UserJWTPayload {
     id: number
-    username: string
+    username?: string
+    name?: string
     email: string
     role?: string
+    type?: "user" | "company"
 }
 
 export interface RegisterUserRequest {
