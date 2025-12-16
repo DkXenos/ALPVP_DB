@@ -20,11 +20,13 @@ privateRouter.get("/bounties", BountyController.getAllBounties)
 privateRouter.get("/bounties/:id", BountyController.getBountyById)
 privateRouter.post("/bounties/:id/claim", BountyController.claimBounty)
 privateRouter.delete("/bounties/:id/unclaim", BountyController.unclaimBounty)
+privateRouter.post("/bounties/:id/submit", BountyController.submitBounty)
 privateRouter.get("/my-bounties", BountyController.getMyBounties)
 
 // Bounty routes (companies only)
 privateRouter.get("/bounties/:id/applicants", BountyController.getBountyApplicants)
 privateRouter.post("/bounties", BountyController.createBounty)
+privateRouter.post("/bounties/:id/select-winner/:userId", BountyController.selectWinner)
 
 // Event routes (companies only)
 privateRouter.get("/events/:id/registrants", EventController.getEventRegistrants)

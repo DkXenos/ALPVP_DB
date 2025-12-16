@@ -155,6 +155,9 @@ export class BountyService {
       assignedAt: assignment.assigned_at.toISOString(),
       isCompleted: assignment.is_completed,
       completedAt: assignment.completed_at ? assignment.completed_at.toISOString() : null,
+      submissionUrl: assignment.submission_url,
+      submissionNotes: assignment.submission_notes,
+      isWinner: assignment.is_winner,
     }));
   }
 
@@ -201,6 +204,9 @@ export class BountyService {
       assignedAt: assignment.assigned_at.toISOString(),
       isCompleted: assignment.is_completed,
       completedAt: assignment.completed_at ? assignment.completed_at.toISOString() : null,
+      submissionUrl: assignment.submission_url,
+      submissionNotes: assignment.submission_notes,
+      isWinner: assignment.is_winner,
     }));
   }
 
@@ -281,5 +287,125 @@ export class BountyService {
       isOwner: true,
     };
   }
-}
 
+  // Submit work for a bounty (user only)
+  static async submitBounty(
+    userId: number,
+    bountyId: string,
+    data: {
+      submissionUrl: string;
+      submissionNotes?: string;
+    }
+  ): Promise<void> {
+    // Check if assignment exists
+    const assignment = await prismaClient.bountyAssignment.findUnique({
+      where: {
+        user_id_bounty_id: {
+          user_id: userId,
+          bounty_id: bountyId,
+        },
+      },
+    });
+
+    if (!assignment) {
+      throw new ResponseError(404, "You have not claimed this bounty");
+    }
+
+    if (assignment.is_winner) {
+      throw new ResponseError(400, "This bounty has already been completed with a winner");
+    }
+
+    // Update assignment with submission
+    await prismaClient.bountyAssignment.update({
+      where: {
+        user_id_bounty_id: {
+          user_id: userId,
+          bounty_id: bountyId,
+        },
+      },
+      data: {
+        submission_url: data.submissionUrl,
+        submission_notes: data.submissionNotes,
+      },
+    });
+  }
+
+  // Select winner for a bounty (company only)
+  static async selectWinner(
+    companyId: number,
+    bountyId: string,
+    winnerId: number
+  ): Promise<void> {
+    // Check if bounty exists and belongs to company
+    const bounty = await prismaClient.bounty.findUnique({
+      where: { id: bountyId },
+    });
+
+    if (!bounty) {
+      throw new ResponseError(404, "Bounty not found");
+    }
+
+    if (bounty.company_id !== companyId) {
+      throw new ResponseError(403, "You don't have permission to select a winner for this bounty");
+    }
+
+    if (bounty.status === "COMPLETED") {
+      throw new ResponseError(400, "This bounty has already been completed");
+    }
+
+    // Check if winner has claimed the bounty
+    const assignment = await prismaClient.bountyAssignment.findUnique({
+      where: {
+        user_id_bounty_id: {
+          user_id: winnerId,
+          bounty_id: bountyId,
+        },
+      },
+    });
+
+    if (!assignment) {
+      throw new ResponseError(404, "This user has not claimed the bounty");
+    }
+
+    if (!assignment.submission_url) {
+      throw new ResponseError(400, "This user has not submitted their work yet");
+    }
+
+    // Use transaction to ensure atomic updates
+    await prismaClient.$transaction([
+      // Mark assignment as winner and completed
+      prismaClient.bountyAssignment.update({
+        where: {
+          user_id_bounty_id: {
+            user_id: winnerId,
+            bounty_id: bountyId,
+          },
+        },
+        data: {
+          is_winner: true,
+          is_completed: true,
+          completed_at: new Date(),
+        },
+      }),
+      // Update bounty status and winner
+      prismaClient.bounty.update({
+        where: { id: bountyId },
+        data: {
+          status: "COMPLETED",
+          winner_id: winnerId,
+        },
+      }),
+      // Add rewards to user
+      prismaClient.user.update({
+        where: { id: winnerId },
+        data: {
+          xp: {
+            increment: bounty.rewardXp,
+          },
+          balance: {
+            increment: bounty.rewardMoney,
+          },
+        },
+      }),
+    ]);
+  }}

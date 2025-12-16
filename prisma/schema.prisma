@@ -14,10 +14,13 @@ model User {
   email    String @unique @db.VarChar(150)
   password String @db.VarChar(100)
   role     String @default("TALENT") @db.VarChar(20)
+  xp       Int    @default(0)
+  balance  Int    @default(0)
 
   posts              Post[]
   eventRegistrations EventRegistration[]
   bountyAssignments  BountyAssignment[]
+  bountiesWon        Bounty[]
 
   @@map("users")
 }
@@ -117,19 +120,24 @@ model Bounty {
   rewardMoney Int      @map("reward_money")
   status      String   @db.VarChar(20)
   created_at  DateTime @default(now())
+  winner_id   Int?
 
   company           Company            @relation(fields: [company_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  winner            User?              @relation(fields: [winner_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
   bountyAssignments BountyAssignment[]
 
   @@map("bounties")
 }
 
 model BountyAssignment {
-  user_id       Int
-  bounty_id     String
-  assigned_at   DateTime @default(now())
-  is_completed  Boolean  @default(false)
-  completed_at  DateTime?
+  user_id          Int
+  bounty_id        String
+  assigned_at      DateTime @default(now())
+  is_completed     Boolean  @default(false)
+  completed_at     DateTime?
+  submission_url   String?  @db.VarChar(500)
+  submission_notes String?  @db.Text
+  is_winner        Boolean  @default(false)
 
   user   User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   bounty Bounty @relation(fields: [bounty_id], references: [id], onDelete: Cascade, onUpdate: Cascade)

@@ -16,6 +16,9 @@ export interface AssignedBountyResponse extends BountyResponse {
   assignedAt: string;
   isCompleted: boolean;
   completedAt: string | null;
+  submissionUrl: string | null;
+  submissionNotes: string | null;
+  isWinner: boolean;
 }
 
 export interface ClaimBountyRequest {
@@ -44,4 +47,16 @@ export interface BountyApplicant {
   assignedAt: string;
   isCompleted: boolean;
   completedAt: string | null;
+  submissionUrl: string | null;
+  submissionNotes: string | null;
+  isWinner: boolean;
+}
+
+export interface SubmitBountyRequest {
+  submissionUrl: string;
+  submissionNotes?: string;
+}
+
+export interface SelectWinnerRequest {
+  userId: number;
 }

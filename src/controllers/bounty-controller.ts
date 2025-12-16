@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { BountyService } from "../services/bounty-service";
 import { UserRequest } from "../models/user-request-model";
-import { CreateBountyRequest } from "../models/bounty-model";
+import { CreateBountyRequest, SubmitBountyRequest, SelectWinnerRequest } from "../models/bounty-model";
 
 export class BountyController {
   static async getAllBounties(req: UserRequest, res: Response, next: NextFunction) {
@@ -135,4 +135,58 @@ export class BountyController {
       next(error);
     }
   }
-}
+
+  // Submit work for a bounty (user only)
+  static async submitBounty(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      if (req.user?.type !== "user") {
+        return res.status(403).json({
+          errors: "Only users can submit work",
+        });
+      }
+
+      const userId = req.user.id;
+      const bountyId = req.params.id;
+      const request: SubmitBountyRequest = req.body;
+
+      await BountyService.submitBounty(userId, bountyId, {
+        submissionUrl: request.submissionUrl,
+        submissionNotes: request.submissionNotes,
+      });
+
+      res.status(200).json({
+        message: "Work submitted successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Select winner for a bounty (company only)
+  static async selectWinner(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      if (req.user?.type !== "company") {
+        return res.status(403).json({
+          errors: "Only companies can select winners",
+        });
+      }
+
+      const companyId = req.user.id;
+      const bountyId = req.params.id;
+      const userId = parseInt(req.params.userId);
+
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          errors: "Invalid user ID",
+        });
+      }
+
+      await BountyService.selectWinner(companyId, bountyId, userId);
+
+      res.status(200).json({
+        message: "Winner selected successfully and rewards have been distributed",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }}
