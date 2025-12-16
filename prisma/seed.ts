@@ -1,5 +1,4 @@
 import { PrismaClient } from "../generated/prisma";
-import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
@@ -11,40 +10,37 @@ async function main() {
   await prisma.bounty.deleteMany({});
   await prisma.company.deleteMany({});
 
-  // Hash the password properly
-  const hashedPassword = await bcrypt.hash("company123", 10);
-
   // Create companies
   const companies = await prisma.company.createMany({
     data: [
       {
         name: "TechCorp Solutions",
         email: "contact@techcorp.com",
-        password: hashedPassword,
+        password: "$2b$10$dummyhashedpassword1", // In real app, hash this properly
         description: "Leading technology solutions provider",
       },
       {
         name: "StartUp Innovations",
         email: "hello@startup.com",
-        password: hashedPassword,
+        password: "$2b$10$dummyhashedpassword2",
         description: "Innovative startup building the future",
       },
       {
         name: "DataFlow Inc",
         email: "info@dataflow.com",
-        password: hashedPassword,
+        password: "$2b$10$dummyhashedpassword3",
         description: "Data management and analytics company",
       },
       {
         name: "SecureNet",
         email: "security@securenet.com",
-        password: hashedPassword,
+        password: "$2b$10$dummyhashedpassword4",
         description: "Cybersecurity and network security experts",
       },
       {
         name: "DesignHub",
         email: "creative@designhub.com",
-        password: hashedPassword,
+        password: "$2b$10$dummyhashedpassword5",
         description: "Creative design and branding agency",
       },
     ],
