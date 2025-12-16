@@ -25,7 +25,7 @@ export class UserService {
         // Password di hash
         const hashed = await bcrypt.hash(validatedData.password, 10)
 
-        // Create user with server-side default role (not accepted from client)
+        // Create user (no client-supplied role)
         const user = await prismaClient.user.create({
             data: {
                 username: validatedData.username,

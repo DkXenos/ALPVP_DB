@@ -19,7 +19,6 @@ export class ProfileController {
                     id: true,
                     username: true,
                     email: true,
-                    role: true,
                     xp: true,
                     balance: true,
                     posts: {
@@ -89,7 +88,6 @@ export class ProfileController {
                     id: user.id,
                     username: user.username,
                     email: user.email,
-                    role: user.role,
                     xp: user.xp,
                     balance: user.balance,
                     posts: user.posts,
@@ -199,7 +197,6 @@ export class ProfileController {
                     id: true,
                     username: true,
                     email: true,
-                    role: true,
                 },
             })
 

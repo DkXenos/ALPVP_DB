@@ -42,6 +42,5 @@ export interface EventRegistrant {
     id: number;
     username: string;
     email: string;
-    role: string;
   };
 }

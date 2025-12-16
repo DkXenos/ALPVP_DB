@@ -361,7 +361,6 @@ export class EventService {
             id: true,
             username: true,
             email: true,
-            role: true,
           },
         },
       },
@@ -372,7 +371,6 @@ export class EventService {
         id: registration.user.id,
         username: registration.user.username,
         email: registration.user.email,
-        role: registration.user.role,
       },
     }));
   }

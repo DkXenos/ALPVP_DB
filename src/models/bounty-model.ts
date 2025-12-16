@@ -42,7 +42,6 @@ export interface BountyApplicant {
     id: number;
     username: string;
     email: string;
-    role: string;
   };
   assignedAt: string;
   isCompleted: boolean;
