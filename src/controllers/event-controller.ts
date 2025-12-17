@@ -6,6 +6,7 @@ import {
   RegisterToEventRequest,
 } from "../models/event-model";
 import { UserRequest } from "../models/user-request-model";
+import { CompanyRequest } from "../models/company-request-model";
 
 export class EventController {
   static async createEvent(req: Request, res: Response, next: NextFunction) {
@@ -114,16 +115,16 @@ export class EventController {
   }
 
   // Get registrants for an event (company only)
-  static async getEventRegistrants(req: UserRequest, res: Response, next: NextFunction) {
+  static async getEventRegistrants(req: CompanyRequest, res: Response, next: NextFunction) {
     try {
-      if (req.user?.type !== "company") {
+      if (!req.company) {
         return res.status(403).json({
           errors: "Only companies can view registrants",
         });
       }
 
       const eventId = parseInt(req.params.id);
-      const companyId = req.user.id;
+      const companyId = req.company.id;
       const response = await EventService.getEventRegistrants(eventId, companyId);
       res.status(200).json({
         data: response,
@@ -134,15 +135,15 @@ export class EventController {
   }
 
   // Get company's events
-  static async getCompanyEvents(req: UserRequest, res: Response, next: NextFunction) {
+  static async getCompanyEvents(req: CompanyRequest, res: Response, next: NextFunction) {
     try {
-      if (req.user?.type !== "company") {
+      if (!req.company) {
         return res.status(403).json({
           errors: "Only companies can access this endpoint",
         });
       }
 
-      const companyId = req.user.id;
+      const companyId = req.company.id;
       const response = await EventService.getCompanyEvents(companyId);
       res.status(200).json({
         data: response,
