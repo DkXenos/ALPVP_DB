@@ -72,7 +72,7 @@ export class CompanyController {
 
       // Handle logo upload if file is provided
       if (req.file) {
-        request.logo = `/uploads/${req.file.filename}`;
+        request.logo = `/uploads/companies/${req.file.filename}`;
       }
 
       const response = await CompanyService.updateCompany(id, request);
@@ -82,7 +82,7 @@ export class CompanyController {
     } catch (error) {
       // If error occurs, delete uploaded file
       if (req.file) {
-        const filePath = path.join(__dirname, "../../public/uploads", req.file.filename);
+        const filePath = path.join(__dirname, "../../public/uploads/companies", req.file.filename);
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
         }

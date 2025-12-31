@@ -25,12 +25,13 @@ export class UserService {
         // Password di hash
         const hashed = await bcrypt.hash(validatedData.password, 10)
 
-        // Create user (no client-supplied role)
+        // Create user with placeholder profile image
         const user = await prismaClient.user.create({
             data: {
                 username: validatedData.username,
                 email: validatedData.email,
                 password: hashed,
+                profile_image: "/uploads/users/user_placeholder.png",
             },
         })
 

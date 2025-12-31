@@ -29,7 +29,6 @@ export class EventService {
         event_date: new Date(createRequest.event_date),
         company_id: createRequest.company_id,
         registered_quota: createRequest.registered_quota,
-        // image removed: events no longer accept images
       },
       include: {
         company: {
@@ -99,7 +98,6 @@ export class EventService {
       company_name: event.company.name,
       registered_quota: event.registered_quota,
       current_registrations: event.eventRegistrations.length,
-      // image removed: events no longer have images
       created_at: event.created_at,
       registered_users: event.eventRegistrations.map((reg) => reg.user),
     }));
@@ -165,7 +163,6 @@ export class EventService {
         description: updateRequest.description,
         event_date: updateRequest.event_date ? new Date(updateRequest.event_date) : undefined,
         registered_quota: updateRequest.registered_quota,
-        // image removed: events no longer have images
       },
       include: {
         company: {

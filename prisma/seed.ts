@@ -17,26 +17,26 @@ async function main() {
   await prisma.vote.deleteMany()
   await prisma.user.deleteMany()
 
-  // Create users
+  // Create users with placeholder profile image
   const usersData = [
-    { username: "alice", email: "alice@example.com", password: "password123" },
-    { username: "bob", email: "bob@example.com", password: "password123" },
-    { username: "carol", email: "carol@example.com", password: "password123" },
-    { username: "dave", email: "dave@example.com", password: "password123" },
-    { username: "eve", email: "eve@example.com", password: "password123" },
+    { username: "alice", email: "alice@example.com", password: "password123", profile_image: "/uploads/users/user_placeholder.png" },
+    { username: "bob", email: "bob@example.com", password: "password123", profile_image: "/uploads/users/user_placeholder.png" },
+    { username: "carol", email: "carol@example.com", password: "password123", profile_image: "/uploads/users/user_placeholder.png" },
+    { username: "dave", email: "dave@example.com", password: "password123", profile_image: "/uploads/users/user_placeholder.png" },
+    { username: "eve", email: "eve@example.com", password: "password123", profile_image: "/uploads/users/user_placeholder.png" },
   ]
 
   await prisma.user.createMany({ data: usersData })
   const users = await prisma.user.findMany({ orderBy: { id: "asc" } })
   console.log(`Created ${users.length} users`)
 
-  // Create companies
+  // Create companies with placeholder logo
   const companiesData = [
-    { name: "Acme Co", email: "acme@example.com", password: "password123", description: "Acme company" },
-    { name: "TechCorp", email: "tech@example.com", password: "password123", description: "TechCorp" },
-    { name: "DesignHub", email: "design@example.com", password: "password123", description: "DesignHub" },
-    { name: "DataFlow", email: "dataflow@example.com", password: "password123", description: "DataFlow" },
-    { name: "SecureNet", email: "securenet@example.com", password: "password123", description: "SecureNet" },
+    { name: "Acme Co", email: "acme@example.com", password: "password123", description: "Acme company", logo: "/uploads/companies/company_placeholder.png" },
+    { name: "TechCorp", email: "tech@example.com", password: "password123", description: "TechCorp", logo: "/uploads/companies/company_placeholder.png" },
+    { name: "DesignHub", email: "design@example.com", password: "password123", description: "DesignHub", logo: "/uploads/companies/company_placeholder.png" },
+    { name: "DataFlow", email: "dataflow@example.com", password: "password123", description: "DataFlow", logo: "/uploads/companies/company_placeholder.png" },
+    { name: "SecureNet", email: "securenet@example.com", password: "password123", description: "SecureNet", logo: "/uploads/companies/company_placeholder.png" },
   ]
 
   await prisma.company.createMany({ data: companiesData })

@@ -28,13 +28,14 @@ export class CompanyService {
     // Hash password
     const hashedPassword = await bcrypt.hash(registerRequest.password, 10);
 
-    // Create company
+    // Create company with placeholder logo
     const company = await prismaClient.company.create({
       data: {
         name: registerRequest.name,
         email: registerRequest.email,
         password: hashedPassword,
         description: registerRequest.description || null,
+        logo: "/uploads/companies/company_placeholder.png",
       },
     });
 

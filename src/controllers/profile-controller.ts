@@ -198,7 +198,7 @@ export class ProfileController {
             
             // Handle profile image upload
             if (req.file) {
-                updateData.profile_image = `/uploads/${req.file.filename}`
+                updateData.profile_image = `/uploads/users/${req.file.filename}`
             }
 
             const updatedUser = await prismaClient.user.update({
@@ -218,7 +218,7 @@ export class ProfileController {
         } catch (error) {
             // If error occurs, delete uploaded file
             if (req.file) {
-                const filePath = path.join(__dirname, "../../public/uploads", req.file.filename)
+                const filePath = path.join(__dirname, "../../public/uploads/users", req.file.filename)
                 if (fs.existsSync(filePath)) {
                     fs.unlinkSync(filePath)
                 }
