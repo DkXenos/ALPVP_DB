@@ -5,6 +5,7 @@ import { CommentController } from '../controllers/comment-controller';
 import { VoteController } from '../controllers/vote-controller';
 import { EventController } from '../controllers/event-controller';
 import { CompanyController } from '../controllers/company-controller';
+import { upload } from '../utils/multer-util';
 
 export const publicRouter = express.Router();
 
@@ -35,7 +36,7 @@ publicRouter.delete("/votes/:voteId", VoteController.removeVote);
 // Note: company creation now handled via /companies/register (auth flow)
 publicRouter.get("/companies", CompanyController.getAllCompanies);
 publicRouter.get("/companies/:id", CompanyController.getCompanyById);
-publicRouter.put("/companies/:id", CompanyController.updateCompany);
+publicRouter.put("/companies/:id", upload.single('logo'), CompanyController.updateCompany);
 publicRouter.delete("/companies/:id", CompanyController.deleteCompany);
 
 // Event routes

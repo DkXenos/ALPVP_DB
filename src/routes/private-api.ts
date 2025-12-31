@@ -3,6 +3,7 @@ import { authMiddleware } from "../middlewares/auth-middleware"
 import { BountyController } from "../controllers/bounty-controller"
 import { ProfileController } from "../controllers/profile-controller"
 import { EventController } from "../controllers/event-controller"
+import { upload } from "../utils/multer-util"
 
 export const privateRouter = express.Router()
 
@@ -11,7 +12,7 @@ privateRouter.use(authMiddleware)
 // Profile routes
 privateRouter.get("/profile", ProfileController.getProfile)
 privateRouter.get("/profile/stats", ProfileController.getProfileStats)
-privateRouter.put("/profile", ProfileController.updateProfile)
+privateRouter.put("/profile", upload.single('profile_image'), ProfileController.updateProfile)
 privateRouter.get("/profile/posts", ProfileController.getUserPosts)
 privateRouter.get("/profile/events", ProfileController.getUserEvents)
 

@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express"
 import { UserRequest } from "../models/user-request-model"
 import { prismaClient } from "../utils/database-util"
 import { ResponseError } from "../error/response-error"
+import fs from "fs"
+import path from "path"
 
 export class ProfileController {
     // Get current user profile with all related data
@@ -21,6 +23,7 @@ export class ProfileController {
                     email: true,
                     xp: true,
                     balance: true,
+                    profile_image: true,
                     posts: {
                         select: {
                             id: true,
@@ -90,6 +93,7 @@ export class ProfileController {
                     email: user.email,
                     xp: user.xp,
                     balance: user.balance,
+                    profile_image: user.profile_image,
                     posts: user.posts,
                     events: user.eventRegistrations.map((reg) => reg.event),
                     bounties: user.bountyAssignments.map((assignment) => ({
@@ -187,16 +191,24 @@ export class ProfileController {
                 }
             }
 
+            // Build update data
+            const updateData: any = {}
+            if (username) updateData.username = username
+            if (email) updateData.email = email
+            
+            // Handle profile image upload
+            if (req.file) {
+                updateData.profile_image = `/uploads/${req.file.filename}`
+            }
+
             const updatedUser = await prismaClient.user.update({
                 where: { id: userId },
-                data: {
-                    ...(username && { username }),
-                    ...(email && { email }),
-                },
+                data: updateData,
                 select: {
                     id: true,
                     username: true,
                     email: true,
+                    profile_image: true,
                 },
             })
 
@@ -204,6 +216,13 @@ export class ProfileController {
                 data: updatedUser,
             })
         } catch (error) {
+            // If error occurs, delete uploaded file
+            if (req.file) {
+                const filePath = path.join(__dirname, "../../public/uploads", req.file.filename)
+                if (fs.existsSync(filePath)) {
+                    fs.unlinkSync(filePath)
+                }
+            }
             next(error)
         }
     }

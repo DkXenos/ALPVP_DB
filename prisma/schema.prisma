@@ -9,12 +9,13 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  username String @db.VarChar(100)
-  email    String @unique @db.VarChar(150)
-  password String @db.VarChar(100)
-  xp       Int    @default(0)
-  balance  Int    @default(0)
+  id            Int     @id @default(autoincrement())
+  username      String  @db.VarChar(100)
+  email         String  @unique @db.VarChar(150)
+  password      String  @db.VarChar(100)
+  xp            Int     @default(0)
+  balance       Int     @default(0)
+  profile_image String? @db.VarChar(500)
 
   posts              Post[]
   eventRegistrations EventRegistration[]
@@ -75,6 +76,7 @@ model Company {
   description String?  @db.Text
   email       String   @unique @db.VarChar(150)
   password    String   @db.VarChar(100)
+  logo        String?  @db.VarChar(500)
   created_at  DateTime @default(now())
 
   events   Event[]

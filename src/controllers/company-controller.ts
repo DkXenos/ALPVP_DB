@@ -1,10 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { CompanyService } from "../services/company-service";
+import fs from "fs";
+import path from "path";
+
 import {
   UpdateCompanyRequest,
   RegisterCompanyRequest,
   LoginCompanyRequest,
 } from "../models/company-model";
+
 
 export class CompanyController {
   static async register(req: Request, res: Response, next: NextFunction) {
@@ -58,12 +62,31 @@ export class CompanyController {
   static async updateCompany(req: Request, res: Response, next: NextFunction) {
     try {
       const id = parseInt(req.params.id);
-      const request: UpdateCompanyRequest = req.body;
+      
+      // Build request object
+      const request: UpdateCompanyRequest = {
+        name: req.body.name,
+        description: req.body.description,
+        email: req.body.email,
+      };
+
+      // Handle logo upload if file is provided
+      if (req.file) {
+        request.logo = `/uploads/${req.file.filename}`;
+      }
+
       const response = await CompanyService.updateCompany(id, request);
       res.status(200).json({
         data: response,
       });
     } catch (error) {
+      // If error occurs, delete uploaded file
+      if (req.file) {
+        const filePath = path.join(__dirname, "../../public/uploads", req.file.filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
       next(error);
     }
   }

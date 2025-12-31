@@ -115,6 +115,7 @@ export class CompanyService {
       name: company.name,
       description: company.description,
       email: company.email,
+      logo: company.logo,
       created_at: company.created_at,
     }));
   }
@@ -133,6 +134,7 @@ export class CompanyService {
       name: company.name,
       description: company.description,
       email: company.email,
+      logo: company.logo,
       created_at: company.created_at,
     };
   }
@@ -166,6 +168,7 @@ export class CompanyService {
         name: updateRequest.name,
         description: updateRequest.description,
         email: updateRequest.email,
+        logo: updateRequest.logo,
       },
     });
 
@@ -174,6 +177,7 @@ export class CompanyService {
       name: company.name,
       description: company.description,
       email: company.email,
+      logo: company.logo,
       created_at: company.created_at,
     };
   }

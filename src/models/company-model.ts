@@ -3,6 +3,7 @@ export interface UpdateCompanyRequest {
   name?: string;
   description?: string;
   email?: string;
+  logo?: string;
 }
 
 export interface CompanyResponse {
@@ -10,6 +11,7 @@ export interface CompanyResponse {
   name: string;
   description: string | null;
   email: string;
+  logo: string | null;
   created_at: Date;
 }
 
