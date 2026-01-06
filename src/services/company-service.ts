@@ -227,7 +227,7 @@ export class CompanyService {
     return { logo: logoUrl };
   }
 
-  static async deleteLogo(companyId: number): Promise<{ logo: null }> {
+  static async deleteLogo(companyId: number): Promise<{ logo: string }> {
     const company = await prismaClient.company.findUnique({
       where: { id: companyId },
     });
@@ -247,11 +247,12 @@ export class CompanyService {
     }
 
     // Update company to placeholder
+    const defaultLogo = "/uploads/companies/company_placeholder.png";
     await prismaClient.company.update({
       where: { id: companyId },
-      data: { logo: "/uploads/companies/company_placeholder.png" },
+      data: { logo: defaultLogo },
     });
 
-    return { logo: null };
+    return { logo: defaultLogo };
   }
 }

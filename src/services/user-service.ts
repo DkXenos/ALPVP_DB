@@ -88,7 +88,7 @@ export class UserService {
         return { profile_image: imageUrl }
     }
 
-    static async deleteProfileImage(userId: number): Promise<{ profile_image: null }> {
+    static async deleteProfileImage(userId: number): Promise<{ profile_image: string }> {
         const user = await prismaClient.user.findUnique({
             where: { id: userId },
         })
@@ -107,12 +107,13 @@ export class UserService {
             }
         }
 
-        // Update user to null or placeholder
+        // Update user to placeholder
+        const defaultImage = "/uploads/users/user_placeholder.png"
         await prismaClient.user.update({
             where: { id: userId },
-            data: { profile_image: "/uploads/users/user_placeholder.png" },
+            data: { profile_image: defaultImage },
         })
 
-        return { profile_image: null }
+        return { profile_image: defaultImage }
     }
 }
