@@ -57,4 +57,62 @@ export class UserService {
 
         return toUserResponse(user.id, user.username, user.email)
     }
+
+    static async uploadProfileImage(userId: number, filename: string): Promise<{ profile_image: string }> {
+        // Get existing user to delete old image if exists
+        const user = await prismaClient.user.findUnique({
+            where: { id: userId },
+        })
+
+        if (!user) {
+            throw new ResponseError(404, "User not found")
+        }
+
+        // Delete old image file if exists and not placeholder
+        if (user.profile_image && !user.profile_image.includes("placeholder")) {
+            const fs = await import("fs")
+            const path = await import("path")
+            const oldPath = path.join(__dirname, "../../public", user.profile_image)
+            if (fs.existsSync(oldPath)) {
+                fs.unlinkSync(oldPath)
+            }
+        }
+
+        // Update user with new image path
+        const imageUrl = `/uploads/users/${filename}`
+        await prismaClient.user.update({
+            where: { id: userId },
+            data: { profile_image: imageUrl },
+        })
+
+        return { profile_image: imageUrl }
+    }
+
+    static async deleteProfileImage(userId: number): Promise<{ profile_image: null }> {
+        const user = await prismaClient.user.findUnique({
+            where: { id: userId },
+        })
+
+        if (!user) {
+            throw new ResponseError(404, "User not found")
+        }
+
+        // Delete image file if exists
+        if (user.profile_image && !user.profile_image.includes("placeholder")) {
+            const fs = await import("fs")
+            const path = await import("path")
+            const imagePath = path.join(__dirname, "../../public", user.profile_image)
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath)
+            }
+        }
+
+        // Update user to null or placeholder
+        await prismaClient.user.update({
+            where: { id: userId },
+            data: { profile_image: "/uploads/users/user_placeholder.png" },
+        })
+
+        return { profile_image: null }
+    }
 }

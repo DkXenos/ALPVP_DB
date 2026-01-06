@@ -8,6 +8,7 @@ import {
   RegisterCompanyRequest,
   LoginCompanyRequest,
 } from "../models/company-model";
+import { CompanyRequest } from "../models/company-request-model";
 
 
 export class CompanyController {
@@ -98,6 +99,43 @@ export class CompanyController {
       res.status(200).json({
         message: "Company deleted successfully",
       });
+    } catch (error) {
+      next(error);
+    }
+  }
+  
+  static async uploadLogo(req: CompanyRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.company) {
+        return res.status(401).json({ errors: "Unauthorized" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ errors: "No file uploaded" });
+      }
+
+      const response = await CompanyService.uploadLogo(req.company.id, req.file.filename);
+      res.status(200).json({ data: response });
+    } catch (error) {
+      // Delete uploaded file if error occurs
+      if (req.file) {
+        const filePath = path.join(__dirname, "../../public/uploads/companies", req.file.filename);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+      next(error);
+    }
+  }
+
+  static async deleteLogo(req: CompanyRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.company) {
+        return res.status(401).json({ errors: "Unauthorized" });
+      }
+
+      const response = await CompanyService.deleteLogo(req.company.id);
+      res.status(200).json({ data: response });
     } catch (error) {
       next(error);
     }

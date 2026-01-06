@@ -3,6 +3,8 @@ import { authMiddleware } from "../middlewares/auth-middleware"
 import { BountyController } from "../controllers/bounty-controller"
 import { ProfileController } from "../controllers/profile-controller"
 import { EventController } from "../controllers/event-controller"
+import { UserController } from "../controllers/user-controller"
+import { CompanyController } from "../controllers/company-controller"
 import { upload } from "../utils/multer-util"
 
 export const privateRouter = express.Router()
@@ -15,6 +17,14 @@ privateRouter.get("/profile/stats", ProfileController.getProfileStats)
 privateRouter.put("/profile", upload.single('profile_image'), ProfileController.updateProfile)
 privateRouter.get("/profile/posts", ProfileController.getUserPosts)
 privateRouter.get("/profile/events", ProfileController.getUserEvents)
+
+// User image routes
+privateRouter.post("/users/me/profile-image", upload.single('profile_image'), UserController.uploadProfileImage)
+privateRouter.delete("/users/me/profile-image", UserController.deleteProfileImage)
+
+// Company logo routes
+privateRouter.post("/companies/me/logo", upload.single('logo'), CompanyController.uploadLogo)
+privateRouter.delete("/companies/me/logo", CompanyController.deleteLogo)
 
 // Bounty routes (users)
 privateRouter.get("/bounties", BountyController.getAllBounties)

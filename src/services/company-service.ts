@@ -196,4 +196,62 @@ export class CompanyService {
       where: { id },
     });
   }
+
+  static async uploadLogo(companyId: number, filename: string): Promise<{ logo: string }> {
+    // Get existing company to delete old logo if exists
+    const company = await prismaClient.company.findUnique({
+      where: { id: companyId },
+    });
+
+    if (!company) {
+      throw new ResponseError(404, "Company not found");
+    }
+
+    // Delete old logo file if exists and not placeholder
+    if (company.logo && !company.logo.includes("placeholder")) {
+      const fs = await import("fs");
+      const path = await import("path");
+      const oldPath = path.join(__dirname, "../../public", company.logo);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+
+    // Update company with new logo path
+    const logoUrl = `/uploads/companies/${filename}`;
+    await prismaClient.company.update({
+      where: { id: companyId },
+      data: { logo: logoUrl },
+    });
+
+    return { logo: logoUrl };
+  }
+
+  static async deleteLogo(companyId: number): Promise<{ logo: null }> {
+    const company = await prismaClient.company.findUnique({
+      where: { id: companyId },
+    });
+
+    if (!company) {
+      throw new ResponseError(404, "Company not found");
+    }
+
+    // Delete logo file if exists
+    if (company.logo && !company.logo.includes("placeholder")) {
+      const fs = await import("fs");
+      const path = await import("path");
+      const logoPath = path.join(__dirname, "../../public", company.logo);
+      if (fs.existsSync(logoPath)) {
+        fs.unlinkSync(logoPath);
+      }
+    }
+
+    // Update company to placeholder
+    await prismaClient.company.update({
+      where: { id: companyId },
+      data: { logo: "/uploads/companies/company_placeholder.png" },
+    });
+
+    return { logo: null };
+  }
 }
