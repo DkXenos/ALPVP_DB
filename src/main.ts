@@ -17,5 +17,6 @@ app.use("/api", privateRouter);
 app.use(errorMiddleware);
 
 app.listen(PORT, "0.0.0.0", () => {
+    console.log('connected!!');
     console.log(`Server running on port ${PORT}`)
 });

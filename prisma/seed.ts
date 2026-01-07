@@ -43,13 +43,38 @@ async function main() {
   const companies = await prisma.company.findMany({ orderBy: { id: "asc" } })
   console.log(`Created ${companies.length} companies`)
 
-  // Create posts
+  // Create posts - lots of diverse content
   const posts = await Promise.all([
-    prisma.post.create({ data: { user_id: users[0].id, content: "Hello from Alice!" } }),
-    prisma.post.create({ data: { user_id: users[1].id, content: "Bob's first post." } }),
-    prisma.post.create({ data: { user_id: users[2].id, content: "Carol shares an update." } }),
-    prisma.post.create({ data: { user_id: users[3].id, content: "Dave's insight on tech." } }),
-    prisma.post.create({ data: { user_id: users[4].id, content: "Eve says hi." } }),
+    prisma.post.create({ data: { user_id: users[0].id, content: "Just finished migrating our entire backend to TypeScript! The type safety is a game changer. Who else made the switch this year? 🚀" } }),
+    prisma.post.create({ data: { user_id: users[1].id, content: "Hot take: CSS Grid is better than Flexbox for most layouts. Change my mind 💭" } }),
+    prisma.post.create({ data: { user_id: users[2].id, content: "Spent 3 hours debugging only to realize I forgot to save the file. Anyone else? 😅" } }),
+    prisma.post.create({ data: { user_id: users[3].id, content: "Just deployed my first app to production! Feeling nervous and excited at the same time 🎉" } }),
+    prisma.post.create({ data: { user_id: users[4].id, content: "Reading Clean Code by Robert Martin. This book is changing how I write code! Highly recommend 📚" } }),
+    prisma.post.create({ data: { user_id: users[0].id, content: "Question: Should I learn Vue or React in 2026? Looking at job market trends..." } }),
+    prisma.post.create({ data: { user_id: users[1].id, content: "Dockerized my entire development environment. No more 'works on my machine' issues! 🐳" } }),
+    prisma.post.create({ data: { user_id: users[2].id, content: "Anyone attending the tech conference next month? Would love to connect!" } }),
+    prisma.post.create({ data: { user_id: users[3].id, content: "Just got my AWS certification! Next up: Kubernetes 💪" } }),
+    prisma.post.create({ data: { user_id: users[4].id, content: "Reminder: Always write tests. Your future self will thank you! 🧪" } }),
+    prisma.post.create({ data: { user_id: users[0].id, content: "The new JavaScript features in ES2026 are mind-blowing. Pattern matching is finally here! 🎯" } }),
+    prisma.post.create({ data: { user_id: users[1].id, content: "Switched from REST to GraphQL for our API. The flexibility is incredible but the learning curve is real 📈" } }),
+    prisma.post.create({ data: { user_id: users[2].id, content: "Pro tip: Use Prisma for your next project. The developer experience is unmatched! ⚡" } }),
+    prisma.post.create({ data: { user_id: users[3].id, content: "Been pair programming all week. It's amazing how much faster we solve problems together 👥" } }),
+    prisma.post.create({ data: { user_id: users[4].id, content: "Started contributing to open source! My first PR just got merged 🎊" } }),
+    prisma.post.create({ data: { user_id: users[0].id, content: "Database optimization reduced our query time from 3s to 50ms. Indexing matters! 🔥" } }),
+    prisma.post.create({ data: { user_id: users[1].id, content: "Working on a side project that uses AI to generate code. Progress is looking good! 🤖" } }),
+    prisma.post.create({ data: { user_id: users[2].id, content: "Just learned about the SOLID principles. Wish someone taught me this earlier in my career!" } }),
+    prisma.post.create({ data: { user_id: users[3].id, content: "Setting up CI/CD pipeline with GitHub Actions. Automation is beautiful 🎭" } }),
+    prisma.post.create({ data: { user_id: users[4].id, content: "Finally understood closures in JavaScript after 2 years. Sometimes it just clicks! 💡" } }),
+    prisma.post.create({ data: { user_id: users[0].id, content: "Refactored 500 lines of code down to 150. Code that doesn't exist can't have bugs! ✨" } }),
+    prisma.post.create({ data: { user_id: users[1].id, content: "Joined a new startup as lead developer. Excited for this new chapter! 🚀" } }),
+    prisma.post.create({ data: { user_id: users[2].id, content: "Best VS Code extensions for web development? Drop your favorites below! 👇" } }),
+    prisma.post.create({ data: { user_id: users[3].id, content: "Implementing dark mode in our app. Users have been requesting this forever! 🌙" } }),
+    prisma.post.create({ data: { user_id: users[4].id, content: "Just discovered Tailwind CSS. Where has this been all my life?! 🎨" } }),
+    prisma.post.create({ data: { user_id: users[0].id, content: "Code review tip: Always be kind. We're all learning and growing together 💙" } }),
+    prisma.post.create({ data: { user_id: users[1].id, content: "Microservices vs Monolith debate continues. IMO it depends on your team size and needs 🤔" } }),
+    prisma.post.create({ data: { user_id: users[2].id, content: "Built a Chrome extension that boosts productivity by 50%. Thinking about open sourcing it! 🔧" } }),
+    prisma.post.create({ data: { user_id: users[3].id, content: "Performance testing revealed our app handles 10k concurrent users. Time to scale! 📊" } }),
+    prisma.post.create({ data: { user_id: users[4].id, content: "Learning Go after years of JavaScript. The concurrency model is fascinating! 🐹" } }),
   ])
   console.log(`Created ${posts.length} posts`)
 
