@@ -61,7 +61,7 @@ export class CommentService {
       post_id: comment.post_id,
       content: comment.content,
       created_at: comment.created_at,
-      commentVotes: comment.commentVotes.map((cv) => ({
+      commentVotes: comment.commentVotes.map((cv: any) => ({
         id: cv.vote.id,
         vote_type: cv.vote.vote_type as "upvote" | "downvote",
         comment_id: comment.id,
@@ -110,7 +110,7 @@ export class CommentService {
       post_id: comment.post_id,
       content: comment.content,
       created_at: comment.created_at,
-      commentVotes: comment.commentVotes.map((cv) => ({
+      commentVotes: comment.commentVotes.map((cv: any) => ({
         id: cv.vote.id,
         vote_type: cv.vote.vote_type as "upvote" | "downvote",
         comment_id: comment.id,
@@ -147,12 +147,12 @@ export class CommentService {
       },
     });
 
-    return comments.map((comment) => {
+    return comments.map((comment: any) => {
       const upvotes = comment.commentVotes.filter(
-        (cv) => cv.vote.vote_type === "upvote"
+        (cv: any) => cv.vote.vote_type === "upvote"
       ).length;
       const downvotes = comment.commentVotes.filter(
-        (cv) => cv.vote.vote_type === "downvote"
+        (cv: any) => cv.vote.vote_type === "downvote"
       ).length;
 
       return {
@@ -160,7 +160,7 @@ export class CommentService {
         post_id: comment.post_id,
         content: comment.content,
         created_at: comment.created_at,
-        commentVotes: comment.commentVotes.map((cv) => ({
+        commentVotes: comment.commentVotes.map((cv: any) => ({
           id: cv.vote.id,
           vote_type: cv.vote.vote_type as "upvote" | "downvote",
           comment_id: comment.id,

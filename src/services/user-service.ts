@@ -9,6 +9,8 @@ import { prismaClient } from "../utils/database-util"
 import { UserValidation } from "../validations/user-validation"
 import { Validation } from "../validations/validation"
 import bcrypt from "bcrypt"
+import fs from "fs"
+import path from "path"
 
 export class UserService {
     static async register(request: RegisterUserRequest): Promise<UserResponse> {
@@ -70,8 +72,6 @@ export class UserService {
 
         // Delete old image file if exists and not placeholder
         if (user.profile_image && !user.profile_image.includes("placeholder")) {
-            const fs = await import("fs")
-            const path = await import("path")
             const oldPath = path.join(__dirname, "../../public", user.profile_image)
             if (fs.existsSync(oldPath)) {
                 fs.unlinkSync(oldPath)
@@ -99,8 +99,6 @@ export class UserService {
 
         // Delete image file if exists
         if (user.profile_image && !user.profile_image.includes("placeholder")) {
-            const fs = await import("fs")
-            const path = await import("path")
             const imagePath = path.join(__dirname, "../../public", user.profile_image)
             if (fs.existsSync(imagePath)) {
                 fs.unlinkSync(imagePath)

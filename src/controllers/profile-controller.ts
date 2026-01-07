@@ -95,8 +95,8 @@ export class ProfileController {
                     balance: user.balance,
                     profile_image: user.profile_image,
                     posts: user.posts,
-                    events: user.eventRegistrations.map((reg) => reg.event),
-                    bounties: user.bountyAssignments.map((assignment) => ({
+                    events: user.eventRegistrations.map((reg: any) => reg.event),
+                    bounties: user.bountyAssignments.map((assignment: any) => ({
                         ...assignment.bounty,
                         assignedAt: assignment.assigned_at,
                         isCompleted: assignment.is_completed,
@@ -295,7 +295,7 @@ export class ProfileController {
                 },
             })
 
-            const events = eventRegistrations.map((reg) => reg.event)
+            const events = eventRegistrations.map((reg: any) => reg.event)
 
             res.status(200).json({
                 data: events,

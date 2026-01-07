@@ -11,6 +11,8 @@ import { Validation } from "../validations/validation";
 import { ResponseError } from "../error/response-error";
 import bcrypt from "bcrypt";
 import { generateToken } from "../utils/jwt-util";
+import fs from "fs";
+import path from "path";
 
 export class CompanyService {
   static async register(request: RegisterCompanyRequest): Promise<CompanyAuthResponse> {
@@ -209,8 +211,6 @@ export class CompanyService {
 
     // Delete old logo file if exists and not placeholder
     if (company.logo && !company.logo.includes("placeholder")) {
-      const fs = await import("fs");
-      const path = await import("path");
       const oldPath = path.join(__dirname, "../../public", company.logo);
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
@@ -238,8 +238,6 @@ export class CompanyService {
 
     // Delete logo file if exists
     if (company.logo && !company.logo.includes("placeholder")) {
-      const fs = await import("fs");
-      const path = await import("path");
       const logoPath = path.join(__dirname, "../../public", company.logo);
       if (fs.existsSync(logoPath)) {
         fs.unlinkSync(logoPath);
