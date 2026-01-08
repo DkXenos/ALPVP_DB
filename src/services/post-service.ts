@@ -54,6 +54,11 @@ export class PostService {
             username: true,
           },
         },
+        postVotes: {
+          include: {
+            vote: true,
+          },
+        },
         comments: {
           include: {
             commentVotes: {
@@ -79,6 +84,11 @@ export class PostService {
       image: post.image,
       created_at: post.created_at,
       username: post.user.username,
+      postVotes: post.postVotes.map((pv) => ({
+        id: pv.vote.id,
+        vote_type: pv.vote.vote_type as "upvote" | "downvote",
+        post_id: post.id,
+      })),
       comments: post.comments.map((comment) => ({
         id: comment.id,
         post_id: comment.post_id,
@@ -100,6 +110,11 @@ export class PostService {
         user: {
           select: {
             username: true,
+          },
+        },
+        postVotes: {
+          include: {
+            vote: true,
           },
         },
         comments: {
@@ -128,6 +143,11 @@ export class PostService {
       image: post.image,
       created_at: post.created_at,
       username: post.user.username,
+      postVotes: post.postVotes.map((pv) => ({
+        id: pv.vote.id,
+        vote_type: pv.vote.vote_type as "upvote" | "downvote",
+        post_id: post.id,
+      })),
       comments: post.comments.map((comment) => ({
         id: comment.id,
         post_id: comment.post_id,

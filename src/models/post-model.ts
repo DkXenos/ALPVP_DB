@@ -1,4 +1,5 @@
 import { CommentResponse } from "./comment-model";
+import { VoteResponse } from "./vote-model";
 
 export interface PostResponse {
   id: number;
@@ -7,6 +8,7 @@ export interface PostResponse {
   image?: string | null;
   created_at: Date;
   username?: string;
+  postVotes?: VoteResponse[];
   comments?: CommentResponse[];
 }
 

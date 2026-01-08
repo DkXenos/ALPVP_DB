@@ -32,8 +32,9 @@ model Post {
   image      String?  @db.VarChar(500)
   created_at DateTime @default(now())
 
-  user     User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  comments Comment[]
+  user      User       @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  comments  Comment[]
+  postVotes PostVote[]
 
   @@map("posts")
 }
@@ -55,6 +56,7 @@ model Vote {
   vote_type String @db.VarChar(10) // 'upvote' or 'downvote'
 
   commentVotes CommentVote[]
+  postVotes    PostVote[]
 
   @@map("votes")
 }
@@ -68,6 +70,17 @@ model CommentVote {
 
   @@id([comment_id, vote_id])
   @@map("comment_votes")
+}
+
+model PostVote {
+  post_id Int
+  vote_id Int
+
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  vote Vote @relation(fields: [vote_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([post_id, vote_id])
+  @@map("post_votes")
 }
 
 model Company {

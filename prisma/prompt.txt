@@ -1,0 +1,12 @@
+the posts in the forums cant be liked or downvoted. fix that logic, make t so that the user can vote on an available post (post dont need a postDetail page like events or bounties)
+
+can you seperate the events and post? like they are still in the forums page, but make it so that the user can select between 2 different tabs there, the events tab and the forums tab. or just make a filter instead so that both of them wont show up in the same page.
+
+im pretty sure theres an active bounties logic here but the bottom bar isnt showing the pgae, can you add the events bounties logic back? like make sure that its also funcitoning correctly
+
+the active bounties need to have an active events section too, make it like the forums page where theres 2 different tab to filter events that are currently active (taken by the user) and bounties that are active (taken by the user) 
+
+profile:
+theres an exp meter at the userProfile screen. can you implement that, because theres an exp awarded system in the backend right? make it so that when a user completed a bounty they will get the certain amount of exp inputted when making the bounty, and when the user gets 100 exp it will be turned back to 0 but the user gets +1 level and that gets +50 exp every 10 level, so lvl 1-10 is 100 level required, and lvl 11-20 is 150exp required to level up and so on
+
+can you make a user account that can be logged in by me to test the exp system? make it so that they have actually done some bounties made by actual account that is seeded and the account is high in level like around 12 so that i can test out the exp system
